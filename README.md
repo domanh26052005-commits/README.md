@@ -1,43 +1,52 @@
+### 1.2.2 Use Cases
+A use case (UC) describes a sequence of interactions between a system and an external actor that results in the actor being able to achieve some outcome of value. The names of use cases are always written in the form of a verb followed by an object. 
+
+In this section, the UC diagram below illustrates the actor-UCs and UC-UC relationships for the VIVAS Internal Training Management System workflow[cite: 1].
+
 ```mermaid
+leftToRightDirection
 graph TD
-    %% Central System
-    COS((Cafeteria Ordering System))
+    %% Actors
+    Admin["Application Administrator"]
+    TStaff["Training Staff"]
+    Head["Head of Training"]
+    Manager["Department Manager"]
+    Emp["Employee"]
+    Comms["Internal Communications Staff"]
 
-    %% External Entities
-    Patron[Patron]
-    MM[Menu Manager]
-    PS[Payroll System]
-    CIS[Cafeteria Inventory System]
-    MD[Meal Deliverer]
-    CS[Cafeteria Staff]
+    %% Use Cases
+    UC1((Login to System))
+    UC2((Manage User Permissions))
+    UC3((Configure System Categories))
+    UC4((Create a Course))
+    UC5((Approve a Course))
+    UC6((Assign a Course))
+    UC7((Study a Lecture))
+    UC8((Take a Test))
+    UC9((Review Taken Test))
+    UC10((Post Training News))
+    UC11((View Department Status))
+    UC12((View Global Statistics))
 
-    %% Data Flows
-    Patron -->|meal order and meal changes| COS
-    Patron -->|payroll deduction registration| COS
-    COS -->|menu| Patron
+    %% Connections
+    Emp --> UC1
+    Emp --> UC7
+    Emp --> UC8
+    Emp --> UC9
 
-    MM -->|menu contents| COS
+    Admin --> UC2
+    Admin --> UC3
 
-    COS -->|payroll deduction registration request| PS
-    PS -->|payroll deduction response| COS
-    COS -->|payment request| PS
+    TStaff --> UC4
+    TStaff --> UC6
 
-    COS -->|food item orders| CIS
-    CIS -->|food item availability information| COS
+    Head --> UC5
+    Head --> UC12
+    
+    Manager --> UC11
+    Comms --> UC10
 
-    COS -->|delivery request| MD
-    MD -->|delivery confirmation| COS
-
-    COS -->|meal order| CS
-    CS -->|delivery request| COS
-    CS -->|meal status update| COS
-    CS -->|payment request| COS
-
-    %% Style Adjustments
-    style COS fill:#f9f,stroke:#333,stroke-width:2px;
-    style Patron fill:#fff,stroke:#333,stroke-width:1px;
-    style MM fill:#fff,stroke:#333,stroke-width:1px;
-    style PS fill:#fff,stroke:#333,stroke-width:1px;
-    style CIS fill:#fff,stroke:#333,stroke-width:1px;
-    style MD fill:#fff,stroke:#333,stroke-width:1px;
-    style CS fill:#fff,stroke:#333,stroke-width:1px;
+    %% Relationships
+    UC7 .-> |"<<include>>"| UC1
+    UC8 .-> |"<<include>>"| UC1
+    UC4 .-> |"<<include>>"| UC5
