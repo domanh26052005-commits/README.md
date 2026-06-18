@@ -1,52 +1,62 @@
-### 1.2.2 Use Cases
-A use case (UC) describes a sequence of interactions between a system and an external actor that results in the actor being able to achieve some outcome of value. The names of use cases are always written in the form of a verb followed by an object. 
+### 1.2.4 Business Flow
 
-In this section, the UC diagram below illustrates the actor-UCs and UC-UC relationships for the VIVAS Internal Training Management System workflow[cite: 1].
+This section illustrates the core business workflow of the VIVAS Internal Training Management System: **The Core Training Lifecycle (Creation, Approval, and Execution Flow)**. The swimlane flowchart below demonstrates how different actors interact sequentially to complete a full training cycle, strictly adhering to the company's operational rules such as mandatory approvals and sequential learning[cite: 1].
 
 ```mermaid
-leftToRightDirection
-graph TD
-    %% Actors
-    Admin["Application Administrator"]
-    TStaff["Training Staff"]
-    Head["Head of Training"]
-    Manager["Department Manager"]
-    Emp["Employee"]
-    Comms["Internal Communications Staff"]
+flowchart TD
+    %% Swimlanes definition
+    subgraph TStaff [Training Staff]
+        A(Create Course & Test)
+        B(Assign to Employees/Dept)
+        C(Submit for Approval)
+    end
 
-    %% Use Cases
-    UC1((Login to System))
-    UC2((Manage User Permissions))
-    UC3((Configure System Categories))
-    UC4((Create a Course))
-    UC5((Approve a Course))
-    UC6((Assign a Course))
-    UC7((Study a Lecture))
-    UC8((Take a Test))
-    UC9((Review Taken Test))
-    UC10((Post Training News))
-    UC11((View Department Status))
-    UC12((View Global Statistics))
+    subgraph Head [Head of Training]
+        D{Approve?}
+    end
 
-    %% Connections
-    Emp --> UC1
-    Emp --> UC7
-    Emp --> UC8
-    Emp --> UC9
+    subgraph Emp [Employee]
+        F(Login via AIO)
+        G(Access Assigned Course)
+        H(Study Lectures Sequentially)
+        I(Take Final Test)
+        J(View Final Score)
+    end
 
-    Admin --> UC2
-    Admin --> UC3
+    subgraph Sys [VIVAS System]
+        S1[Status: Pending]
+        S2[Status: Published]
+        S3[Auto-grade & Save Result]
+    end
 
-    TStaff --> UC4
-    TStaff --> UC6
+    subgraph Mgr [Managers & Head]
+        K(View Progress & Reports)
+    end
 
-    Head --> UC5
-    Head --> UC12
+    %% Flow connections
+    A --> B
+    B --> C
+    C --> S1
+    S1 --> D
+    D -->|Rejected| A
+    D -->|Approved| S2
     
-    Manager --> UC11
-    Comms --> UC10
+    %% Note: If Head creates the course, it bypasses approval
+    A -.->|Created by Head| S2
 
-    %% Relationships
-    UC7 .-> |"<<include>>"| UC1
-    UC8 .-> |"<<include>>"| UC1
-    UC4 .-> |"<<include>>"| UC5
+    S2 --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> S3
+    S3 --> J
+    S3 --> K
+
+    %% Styling
+    classDef process fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef decision fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;
+    classDef system fill:#e1d5e7,stroke:#9673a6,stroke-width:2px;
+    
+    class A,B,C,F,G,H,I,J,K process;
+    class D decision;
+    class S1,S2,S3 system;
