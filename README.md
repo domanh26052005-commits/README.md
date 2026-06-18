@@ -1,62 +1,71 @@
-### 1.2.4 Business Flow
+### 1.3 System Screens Flow
 
-This section illustrates the core business workflow of the VIVAS Internal Training Management System: **The Core Training Lifecycle (Creation, Approval, and Execution Flow)**. The swimlane flowchart below demonstrates how different actors interact sequentially to complete a full training cycle, strictly adhering to the company's operational rules such as mandatory approvals and sequential learning[cite: 1].
+This diagram illustrates the navigation paths, system screens, and the relationships among screens for the VIVAS Internal Training Management System. 
+
+*Note: Rectangular nodes represent standard flat screens, while oval nodes represent pop-up windows or modals (e.g., Test Score Pop-up, Assign Course Modal) as per the design guidelines.*
 
 ```mermaid
-flowchart TD
-    %% Swimlanes definition
-    subgraph TStaff [Training Staff]
-        A(Create Course & Test)
-        B(Assign to Employees/Dept)
-        C(Submit for Approval)
-    end
-
-    subgraph Head [Head of Training]
-        D{Approve?}
-    end
-
-    subgraph Emp [Employee]
-        F(Login via AIO)
-        G(Access Assigned Course)
-        H(Study Lectures Sequentially)
-        I(Take Final Test)
-        J(View Final Score)
-    end
-
-    subgraph Sys [VIVAS System]
-        S1[Status: Pending]
-        S2[Status: Published]
-        S3[Auto-grade & Save Result]
-    end
-
-    subgraph Mgr [Managers & Head]
-        K(View Progress & Reports)
-    end
-
-    %% Flow connections
-    A --> B
-    B --> C
-    C --> S1
-    S1 --> D
-    D -->|Rejected| A
-    D -->|Approved| S2
+flowchart LR
+    %% System Entry
+    Login[Login via AIO] --> Dashboard[Main Dashboard]
     
-    %% Note: If Head creates the course, it bypasses approval
-    A -.->|Created by Head| S2
-
-    S2 --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> S3
-    S3 --> J
-    S3 --> K
-
-    %% Styling
-    classDef process fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef decision fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;
-    classDef system fill:#e1d5e7,stroke:#9673a6,stroke-width:2px;
+    %% Common Screens
+    Dashboard --> UserProfile[User Profile]
     
-    class A,B,C,F,G,H,I,J,K process;
-    class D decision;
-    class S1,S2,S3 system;
+    %% -------------------------------------
+    %% 1. EMPLOYEE LEARNING FLOW
+    %% -------------------------------------
+    Dashboard --> CourseList[My Courses / Public]
+    CourseList --> CourseDetails[Course Details]
+    CourseDetails --> StudyLecture[Lecture View Video/Text]
+    StudyLecture --> TakeTest[Take Final Test]
+    
+    %% Pop-up for test results
+    TakeTest --> TestResult([Test Score Pop-up])
+    TestResult --> CourseHistory[Learning History]
+    CourseDetails --> CourseHistory
+
+    %% -------------------------------------
+    %% 2. INTERNAL NEWS FLOW
+    %% -------------------------------------
+    Dashboard --> NewsFeed[News Feed]
+    NewsFeed --> NewsDetail[News Article & Comments]
+    Dashboard --> ManageNews[Manage News]
+    ManageNews --> EditNews[Create/Edit News]
+
+    %% -------------------------------------
+    %% 3. COURSE & TEST MANAGEMENT (TRAINING STAFF)
+    %% -------------------------------------
+    Dashboard --> CourseMgmt[Course Management]
+    CourseMgmt --> EditCourse[Create/Update Course]
+    CourseMgmt --> AssignModal([Assign to Employees])
+    
+    Dashboard --> TestMgmt[Test Management]
+    TestMgmt --> EditTest[Create/Update Test]
+    EditTest --> ManageQuestions[Manage Questions]
+
+    %% -------------------------------------
+    %% 4. APPROVAL FLOW (HEAD OF TRAINING)
+    %% -------------------------------------
+    Dashboard --> Approvals[Approval Queue]
+    Approvals --> ReviewDetails[Review Course/Test Details]
+
+    %% -------------------------------------
+    %% 5. REPORTS & ANALYTICS (MANAGERS & HEAD)
+    %% -------------------------------------
+    Dashboard --> ReportDashboard[Reports & Statistics]
+    ReportDashboard --> DeptStats[Department Progress]
+    ReportDashboard --> EmpStats[Employee Detail Record]
+
+    %% -------------------------------------
+    %% 6. SYSTEM ADMINISTRATION (ADMIN)
+    %% -------------------------------------
+    Dashboard --> UserMgmt[User Management]
+    Dashboard --> SysSettings[System Settings]
+    SysSettings --> EditCategory([Category Update Pop-up])
+
+    %% Styling configurations
+    classDef default fill:#f8f9fa,stroke:#343a40,stroke-width:1px;
+    classDef popup fill:#e9ecef,stroke:#0056b3,stroke-width:2px,stroke-dasharray: 5 5;
+    
+    class TestResult,AssignModal,EditCategory popup;
