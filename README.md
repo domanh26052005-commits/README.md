@@ -1,15 +1,18 @@
 stateDiagram-v2
-    [*] --> TonKho : Tạo mới / Nhập kho
-    TonKho --> DangSuDung : Bàn giao cho nhân viên
-    DangSuDung --> ChoSuaChua : Báo hỏng
-    ChoSuaChua --> DangSuDung : Sửa thành công
-    ChoSuaChua --> ChoThanhLy : Không thể sửa
-    TonKho --> DaThanhLy : Thanh lý / Tiêu hủy
-    ChoThanhLy --> DaThanhLy : Thanh lý / Tiêu hủy
-    DaThanhLy --> [*]
+    %% Định nghĩa các khối trạng thái
+    state "Tồn kho (In Stock)" as TonKho
+    state "Đang sử dụng (In Use)" as DangSuDung
+    state "Chờ sửa chữa (Pending Repair)" as ChoSuaChua
+    state "Chờ thanh lý (Pending Liquidation)" as ChoThanhLy
+    state "Đã thanh lý (Liquidated)" as DaThanhLy
 
-    TonKho : Tồn kho (In Stock)
-    DangSuDung : Đang sử dụng (In Use)
-    ChoSuaChua : Chờ sửa chữa (Pending Repair)
-    ChoThanhLy : Chờ thanh lý (Pending Liquidation)
-    DaThanhLy : Đã thanh lý (Liquidated)
+    %% Mũi tên thể hiện luồng chuyển trạng thái
+    [*] --> TonKho : Nhập mới tài sản vào kho
+    TonKho --> DangSuDung : Cấp phát cho nhân viên
+    DangSuDung --> TonKho : Thu hồi tài sản
+    DangSuDung --> ChoSuaChua : Nhân viên báo hỏng
+    ChoSuaChua --> DangSuDung : Sửa chữa thành công
+    ChoSuaChua --> ChoThanhLy : Hỏng nặng (Không thể sửa)
+    TonKho --> ChoThanhLy : Tài sản cũ / Quá hạn
+    ChoThanhLy --> DaThanhLy : Thực hiện thanh lý / Tiêu hủy
+    DaThanhLy --> [*]
